@@ -53,7 +53,7 @@ typedef enum _JASidePanelState {
 // show the panels
 - (void)showLeftPanelAnimated:(BOOL)animated;
 - (void)showRightPanelAnimated:(BOOL)animated;
-- (void)showCenterPanelAnimated:(BOOL)animated;
+- (void)showCenterPanelAnimated:(BOOL)animated completion:(void (^)(BOOL finish))completion;
 
 // toggle them opened/closed
 - (void)toggleLeftPanel:(id)sender;

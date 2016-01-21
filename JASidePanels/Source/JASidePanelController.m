@@ -375,7 +375,7 @@ static char ja_kvoContext;
             self.centerPanelContainer.frame = _centerPanelRestingFrame;
         } completion:^(__unused BOOL finished) {
             [self _swapCenter:previous previousState:previousState with:_centerPanel];
-            [self _showCenterPanel:YES bounce:NO];
+            [self _showCenterPanel:YES bounce:NO completion:nil];
         }];
     }
 }
@@ -541,11 +541,11 @@ static char ja_kvoContext;
             break;
 		}
         case JASidePanelLeftVisible: {
-            [self _showCenterPanel:YES bounce:self.bounceOnSidePanelClose];
+            [self _showCenterPanel:YES bounce:self.bounceOnSidePanelClose completion:nil];
             break;
 		}
         case JASidePanelRightVisible: {
-            [self _showCenterPanel:YES bounce:self.bounceOnSidePanelClose];
+            [self _showCenterPanel:YES bounce:self.bounceOnSidePanelClose completion:nil];
             break;
 		}
     }
@@ -554,7 +554,7 @@ static char ja_kvoContext;
 - (void)_undoPan {
     switch (self.state) {
         case JASidePanelCenterVisible: {
-            [self _showCenterPanel:YES bounce:NO];
+            [self _showCenterPanel:YES bounce:NO completion:nil];
             break;
 		}
         case JASidePanelLeftVisible: {
@@ -591,7 +591,7 @@ static char ja_kvoContext;
 }
 
 - (void)_centerPanelTapped:(__unused UIGestureRecognizer *)gesture {
-    [self _showCenterPanel:YES bounce:NO];
+    [self _showCenterPanel:YES bounce:NO completion:nil];
 }
 
 #pragma mark - Internal Methods
@@ -866,7 +866,7 @@ static char ja_kvoContext;
     [self _toggleScrollsToTopForCenter:NO left:NO right:YES];
 }
 
-- (void)_showCenterPanel:(BOOL)animated bounce:(BOOL)shouldBounce {
+- (void)_showCenterPanel:(BOOL)animated bounce:(BOOL)shouldBounce completion:(void (^)(BOOL finish))completion {
     self.state = JASidePanelCenterVisible;
     
     [self _adjustCenterFrame];
@@ -876,6 +876,10 @@ static char ja_kvoContext;
             self.leftPanelContainer.hidden = YES;
             self.rightPanelContainer.hidden = YES;
             [self _unloadPanels];
+            
+            if(completion) {
+                completion(finished);
+            }
         }];
     } else {
         self.centerPanelContainer.frame = _centerPanelRestingFrame;	
@@ -886,6 +890,10 @@ static char ja_kvoContext;
         self.leftPanelContainer.hidden = YES;
         self.rightPanelContainer.hidden = YES;
         [self _unloadPanels];
+        
+        if(completion) {
+            completion(YES);
+        }
     }
     
     self.tapView = nil;
@@ -965,7 +973,7 @@ static char ja_kvoContext;
 }
 
 - (void)showCenterPanel:(BOOL)animated {
-    [self showCenterPanelAnimated:animated];
+    [self showCenterPanelAnimated:animated completion:nil];
 }
 
 - (void)showLeftPanelAnimated:(BOOL)animated {
@@ -976,26 +984,26 @@ static char ja_kvoContext;
     [self _showRightPanel:animated bounce:NO];
 }
 
-- (void)showCenterPanelAnimated:(BOOL)animated {
+- (void)showCenterPanelAnimated:(BOOL)animated completion:(void (^)(BOOL finish))completion {
     // make sure center panel isn't hidden
     if (_centerPanelHidden) {
         _centerPanelHidden = NO;
         [self _unhideCenterPanel];
     }
-    [self _showCenterPanel:animated bounce:NO];
+    [self _showCenterPanel:animated bounce:NO completion:completion];
 }
 
-- (void)toggleLeftPanel:(__unused id)sender {
+- (void)toggleLeftPanel:(__unused id)sender completion:(void (^)(BOOL finish))completion {
     if (self.state == JASidePanelLeftVisible) {
-        [self _showCenterPanel:YES bounce:NO];
+        [self _showCenterPanel:YES bounce:NO completion:completion];
     } else if (self.state == JASidePanelCenterVisible) {
         [self _showLeftPanel:YES bounce:NO];
     }
 }
 
-- (void)toggleRightPanel:(__unused id)sender {
+- (void)toggleRightPanel:(__unused id)sender completion:(void (^)(BOOL finish))completion {
     if (self.state == JASidePanelRightVisible) {
-        [self _showCenterPanel:YES bounce:NO];
+        [self _showCenterPanel:YES bounce:NO completion:completion];
     } else if (self.state == JASidePanelCenterVisible) {
         [self _showRightPanel:YES bounce:NO];
     }
