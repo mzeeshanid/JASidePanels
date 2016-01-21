@@ -961,7 +961,7 @@ static char ja_kvoContext;
 #pragma mark - Public Methods
 
 - (UIBarButtonItem *)leftButtonForCenterPanel {
-    return [[UIBarButtonItem alloc] initWithImage:[[self class] defaultImage] style:UIBarButtonItemStylePlain target:self action:@selector(toggleLeftPanel:)];
+    return [[UIBarButtonItem alloc] initWithImage:[[self class] defaultImage] style:UIBarButtonItemStylePlain target:self action:@selector(toggleLeftPanel:completion:)];
 }
 
 - (void)showLeftPanel:(BOOL)animated {
